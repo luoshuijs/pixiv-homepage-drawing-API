@@ -16,7 +16,8 @@ else{
     $fp2 = @fopen("json.temp", "w");
     $search_url="https://www.pixiv.net/";
     $search_data=request_get($search_url);
-     $reg = '/<input type="hidden" id="init-config" class="json-data" (.*?)>/';
+    //因为PHP对双括号和单括号的转义导致只能两步到位解析HTML
+    $reg = '/<input type="hidden" id="init-config" class="json-data" (.*?)>/';
     preg_match($reg,$search_data,$arr);
     $reg = "/value='(.*?)'/";
     preg_match($reg,$arr[1],$arr);
@@ -41,6 +42,7 @@ $count_arr = count($search_data_json_decode->{'pixivBackgroundSlideshow.illusts'
 $illust_id=$search_data_json_decode->{'pixivBackgroundSlideshow.illusts'}->landscape[mt_rand(0,$count_arr)]->illust_id;
 $referer='https://www.pixiv.net/member_illust.php?mode=medium&illust_id='.+strval($illust_id);
 $urls=$search_data_json_decode->{'pixivBackgroundSlideshow.illusts'}->landscape[mt_rand(0,$count_arr)]->url->{'1200x1200'};
+//解析json
 //创建缓存目录
 $path="temp/".date('Ym');
       if (!file_exists($path)) {
@@ -48,15 +50,15 @@ $path="temp/".date('Ym');
             }
     $pathurl = $path."/".basename($urls);
     if(file_exists($pathurl)){
-        //文件存在时
-        //判断文件是存在，并是否随机更新
-        //缓存图片
+        //判断文件是否存在，并是否随机更新图片缓存
         if(mt_rand(0,10)==1){
             goto img_update;
         }
     }
     else{
         img_update:
+        //缓存图片
+        //请求P站图片时必须返图片的主页链接，即referer
         $data=request_get($urls,$referer);
         $fp2 = @fopen($pathurl, "w");
         fwrite($fp2, $data); 
@@ -64,4 +66,5 @@ $path="temp/".date('Ym');
     }
     //302跳转
     header("Location:$pathurl");
+//告辞
 exit();
