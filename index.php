@@ -44,7 +44,7 @@ $referer='https://www.pixiv.net/member_illust.php?mode=medium&illust_id='.+strva
 $urls=$search_data_json_decode->{'pixivBackgroundSlideshow.illusts'}->landscape[mt_rand(0,$count_arr)]->url->{'1200x1200'};
 //解析json
 //创建缓存目录
-$path="temp/".date('');
+$path="temp/".date('Y');
       if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
